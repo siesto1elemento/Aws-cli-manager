@@ -1,0 +1,7 @@
+# .gitignore
+/.idea
+/.vscode
+/bin/
+/vendor/
+*.log
+.env
