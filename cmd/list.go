@@ -6,6 +6,9 @@ import (
 	"os"
 	"strings"
 
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/spf13/cobra"
 )
 
@@ -33,6 +36,30 @@ var listCmd = &cobra.Command{
 		switch choice {
 		case "1":
 			fmt.Println("Listing EC2 instances...")
+			sess := session.Must(session.NewSessionWithOptions(session.Options{
+				Config: aws.Config{
+					Region: aws.String("us-west-2"), // Replace with your desired region
+				},
+
+				SharedConfigState: session.SharedConfigEnable, // Enables shared config
+			}))
+			ec2Svc := ec2.New(sess)
+			input := &ec2.DescribeInstancesInput{
+				Filters: []*ec2.Filter{
+					{
+						Name:   aws.String("instance-state-name"),
+						Values: []*string{aws.String("running")},
+					},
+				},
+			}
+
+			result, err := ec2Svc.DescribeInstances(input)
+			if err != nil {
+				fmt.Println("Error", err)
+			} else {
+				fmt.Println("Success", result)
+			}
+
 		case "2":
 			fmt.Println("Listing S3 buckets...")
 			// Add logic to list S3 buckets here
