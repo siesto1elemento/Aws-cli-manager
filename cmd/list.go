@@ -9,6 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
+	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/spf13/cobra"
 )
 
@@ -40,8 +41,6 @@ var listCmd = &cobra.Command{
 				Config: aws.Config{
 					Region: aws.String("us-west-2"), // Replace with your desired region
 				},
-
-				SharedConfigState: session.SharedConfigEnable, // Enables shared config
 			}))
 			ec2Svc := ec2.New(sess)
 			input := &ec2.DescribeInstancesInput{
@@ -62,7 +61,17 @@ var listCmd = &cobra.Command{
 
 		case "2":
 			fmt.Println("Listing S3 buckets...")
-			// Add logic to list S3 buckets here
+			sess := session.Must(session.NewSessionWithOptions(session.Options{
+				Config: aws.Config{
+					Region: aws.String("us-west-2"), // Replace with your desired region
+				},
+			}))
+			s3Svc := s3.New(sess)
+			result, err := s3Svc.ListBuckets(nil)
+			if err != nil {
+				fmt.Println("Error", err)
+			}
+			fmt.Println("Success", result)
 		case "3":
 			fmt.Println("Listing Lambda functions...")
 			// Add logic to list Lambda functions here
