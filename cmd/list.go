@@ -9,6 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
+	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/spf13/cobra"
 )
@@ -74,7 +75,17 @@ var listCmd = &cobra.Command{
 			fmt.Println("Success", result)
 		case "3":
 			fmt.Println("Listing Lambda functions...")
-			// Add logic to list Lambda functions here
+			sess := session.Must(session.NewSessionWithOptions(session.Options{
+				Config: aws.Config{
+					Region: aws.String("us-west-2"), // Replace with your desired region
+				},
+			}))
+			lambdavc := lambda.New(sess)
+			result, err := lambdavc.ListFunctions(nil)
+			if err != nil {
+				fmt.Println("error", err)
+			}
+			fmt.Println("Result", result)
 		case "4":
 			fmt.Println("Exiting...")
 			return
