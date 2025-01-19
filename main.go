@@ -14,8 +14,9 @@ func main() {
 
 	fmt.Println("What would you like to do?")
 	fmt.Println("1. List AWS resources")
-	fmt.Println("2. Delete AWS resources")
-	fmt.Println("3. Exit")
+	fmt.Println("2. Stop AWS resources")
+	fmt.Println("3. Delete AWS resources")
+	fmt.Println("4. Exit")
 	fmt.Print("Enter the number of your choice: ")
 
 	input, err := reader.ReadString('\n')
@@ -33,9 +34,13 @@ func main() {
 		cmd.Execute()
 	case "2":
 		// Call the 'delete' command
-		os.Args = []string{"aws-cli-manager", "delete"} // Simulate "aws-cli-manager delete"
+		os.Args = []string{"aws-cli-manager", "stop"} // Simulate "aws-cli-manager delete"
 		cmd.Execute()
 	case "3":
+		// Call the 'delete' command
+		os.Args = []string{"aws-cli-manager", "delete"} // Simulate "aws-cli-manager delete"
+		cmd.Execute()
+	case "4":
 		fmt.Println("Exiting...")
 		return
 	default:

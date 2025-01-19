@@ -14,11 +14,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var listCmd = &cobra.Command{
-	Use:   "list",
-	Short: "List AWS resources",
+var stopcmd = &cobra.Command{
+	Use:   "stop",
+	Short: "Stop AWS resources",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Choose a resource to list:")
+		fmt.Println("Choose a resource to Stop:")
 		fmt.Println("1. EC2")
 		fmt.Println("2. S3")
 		fmt.Println("3. Lambda")
@@ -28,73 +28,71 @@ var listCmd = &cobra.Command{
 		reader := bufio.NewReader(os.Stdin)
 		input, err := reader.ReadString('\n')
 		if err != nil {
-			fmt.Println("Error reading input:", err)
-			return
+			fmt.Println("error", err)
+
 		}
-
-		// Trim and process input
 		choice := strings.TrimSpace(input)
-
 		switch choice {
 		case "1":
-			fmt.Println("Listing EC2 instances...")
 			sess := session.Must(session.NewSessionWithOptions(session.Options{
 				Config: aws.Config{
-					Region: aws.String("us-west-2"), // Replace with your desired region
+					Region: aws.String("us-west-2"),
 				},
 			}))
 			ec2Svc := ec2.New(sess)
-			input := &ec2.DescribeInstancesInput{
-				Filters: []*ec2.Filter{
-					{
-						Name:   aws.String("instance-state-name"),
-						Values: []*string{aws.String("running")},
-					},
-				},
+			instanceIDs := []*string{
+				aws.String("ec2_instance_id"),
 			}
 
-			result, err := ec2Svc.DescribeInstances(input)
-			if err != nil {
-				fmt.Println("Error", err)
-			} else {
-				fmt.Println("Success", result)
+			input := &ec2.TerminateInstancesInput{
+				InstanceIds: instanceIDs,
 			}
 
-		case "2":
-			fmt.Println("Listing S3 buckets...")
-			sess := session.Must(session.NewSessionWithOptions(session.Options{
-				Config: aws.Config{
-					Region: aws.String("us-west-2"), // Replace with your desired region
-				},
-			}))
-			s3Svc := s3.New(sess)
-			result, err := s3Svc.ListBuckets(nil)
-			if err != nil {
-				fmt.Println("Error", err)
-			}
-			fmt.Println("Success", result)
-		case "3":
-			fmt.Println("Listing Lambda functions...")
-			sess := session.Must(session.NewSessionWithOptions(session.Options{
-				Config: aws.Config{
-					Region: aws.String("us-west-2"), // Replace with your desired region
-				},
-			}))
-			lambdaSvc := lambda.New(sess)
-			result, err := lambdaSvc.ListFunctions(nil)
+			result, err := ec2Svc.TerminateInstances(input)
 			if err != nil {
 				fmt.Println("error", err)
 			}
 			fmt.Println("Result", result)
-		case "4":
-			fmt.Println("Exiting...")
-			return
-		default:
-			fmt.Println("Invalid choice. Please try again.")
+		case "2":
+			sess := session.Must(session.NewSessionWithOptions(session.Options{
+				Config: aws.Config{
+					Region: aws.String("us-west-2"),
+				},
+			}))
+			s3Svc := s3.New(sess)
+
+			input := &s3.DeleteBucketInput{
+				Bucket: aws.String("Your_bucket_name"),
+			}
+
+			result, err := s3Svc.DeleteBucket(input)
+			if err != nil {
+				fmt.Println("error", err)
+			}
+			fmt.Println("Result", result)
+		case "3":
+			sess := session.Must(session.NewSessionWithOptions(session.Options{
+				Config: aws.Config{
+					Region: aws.String("us-west-2"),
+				},
+			}))
+			lambdaSvc := lambda.New(sess)
+
+			input := &lambda.DeleteFunctionInput{
+				FunctionName: aws.String("Your_function_name"),
+			}
+
+			result, err := lambdaSvc.DeleteFunction(input)
+			if err != nil {
+				fmt.Println("error", err)
+			}
+			fmt.Println("Result", result)
+
 		}
+
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(listCmd)
+	rootCmd.AddCommand(stopcmd)
 }
