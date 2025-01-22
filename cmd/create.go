@@ -9,6 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
+	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/spf13/cobra"
 )
@@ -66,7 +67,30 @@ var createcmd = &cobra.Command{
 				fmt.Println("Error", err)
 			}
 			fmt.Println("Result:", result)
+		case "3":
+			sess := session.Must(session.NewSessionWithOptions(session.Options{
+				Config: aws.Config{
+					Region: aws.String("us-west-2"),
+				}}))
+			lambdaSvc := lambda.New(sess)
+
+			input := &lambda.CreateFunctionInput{
+				FunctionName: aws.String("my-dummy-function"),
+				Runtime:      aws.String("nodejs18.x"),
+				Handler:      aws.String("index.handler"),
+				Role:         aws.String("your_arn_string"),
+				Code: &lambda.FunctionCode{
+					ZipFile: []byte("dummy"),
+				},
+			}
+
+			result, err := lambdaSvc.CreateFunction(input)
+			if err != nil {
+				fmt.Println("Error", err)
+			}
+			fmt.Println("Result", result)
 		}
+
 	},
 }
 
