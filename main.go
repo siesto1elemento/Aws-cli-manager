@@ -17,7 +17,7 @@ func main() {
 	fmt.Println("2. Stop AWS resources")
 	fmt.Println("3. Delete AWS resources")
 	fmt.Println("4. Create AWS resources")
-	fmt.Println("5. Exit")
+	fmt.Println("5. Provision AWS resources")
 	fmt.Print("Enter the number of your choice: ")
 
 	input, err := reader.ReadString('\n')
@@ -45,6 +45,10 @@ func main() {
 		os.Args = []string{"aws-cli-manager", "create"}
 		cmd.Execute()
 	case "5":
+		// Call the 'provision' command
+		os.Args = []string{"aws-cli-manager", "provision"} // Simulate "aws-cli-manager provision"
+		cmd.Execute()
+	case "6":
 		fmt.Println("Exiting...")
 		return
 	default:

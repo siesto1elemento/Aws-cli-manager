@@ -1,0 +1,12 @@
+{
+  "ec2-1": {
+    "id": "ec2-1",
+    "name": "web-server",
+    "type": "ec2",
+    "status": "pending",
+    "config": {
+      "ami": "ami-a0cfeed8",
+      "instance_type": "t2.micro"
+    }
+  }
+}
